@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: binhphu-frontend:latest
+    container_name: binhphu-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=https://cms-binhphu.vkhealth.vn
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - binhphu-network
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  binhphu-network:
+    driver: bridge
