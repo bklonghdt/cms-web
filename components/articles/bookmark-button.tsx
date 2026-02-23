@@ -10,7 +10,7 @@ interface BookmarkButtonProps {
   isPending?: boolean
 }
 
-export function BookmarkButton({ articleId, onToggle, isPending }: BookmarkButtonProps) {
+export function BookmarkButton({ articleId, onToggle, isPending, className }: BookmarkButtonProps & { className?: string }) {
   const { data: isBookmarked, isLoading } = useIsBookmarked(articleId)
 
   return (
@@ -20,6 +20,7 @@ export function BookmarkButton({ articleId, onToggle, isPending }: BookmarkButto
       onClick={() => onToggle(articleId, isBookmarked || false)}
       disabled={isLoading || isPending}
       title={isBookmarked ? "Bỏ lưu" : "Lưu bài viết"}
+      className={className}
     >
       <Bookmark
         className={`h-4 w-4 ${isBookmarked ? "fill-current text-yellow-500" : ""}`}

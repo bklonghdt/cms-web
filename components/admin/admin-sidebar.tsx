@@ -86,6 +86,7 @@ export function AdminSidebar({
       )}
 
       <aside
+        id="admin-sidebar"
         className={cn(
           "fixed left-0 top-0 z-50 h-full border-r bg-zinc-50 dark:bg-zinc-900 transition-all duration-300 lg:sticky",
           isCollapsed ? "w-14" : "w-56",

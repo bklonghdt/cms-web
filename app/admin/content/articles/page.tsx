@@ -126,13 +126,13 @@ export default function ArticlesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
+        <div id="articles-title">
           <h1 className="text-3xl font-bold tracking-tight">Bài viết</h1>
           <p className="text-muted-foreground">
             Quản lý bài viết của bạn
           </p>
         </div>
-        <Link href="/admin/content/articles/new">
+        <Link href="/admin/content/articles/new" id="create-article-btn">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Thêm bài viết
@@ -149,7 +149,9 @@ export default function ArticlesPage() {
                 Danh sách tất cả bài viết trong hệ thống
               </CardDescription>
             </div>
-            <ArticleFilters filters={filters} onFiltersChange={setFilters} />
+            <div id="articles-filter">
+              <ArticleFilters filters={filters} onFiltersChange={setFilters} />
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -158,7 +160,7 @@ export default function ArticlesPage() {
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : filteredArticles && filteredArticles.length > 0 ? (
-            <Table>
+            <Table id="articles-table">
               <TableHeader>
                 <TableRow>
                   <TableHead>Tiêu đề</TableHead>
@@ -233,6 +235,7 @@ export default function ArticlesPage() {
                             size="sm"
                             onClick={() => handlePublish(article.id)}
                             disabled={publishArticle.isPending}
+                            className="btn-action-publish"
                           >
                             Xuất bản
                           </Button>
@@ -241,6 +244,7 @@ export default function ArticlesPage() {
                           <Button
                             variant="ghost"
                             size="icon"
+                            className="btn-action-edit"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -249,11 +253,13 @@ export default function ArticlesPage() {
                           articleId={article.id}
                           onToggle={handleToggleBookmark}
                           isPending={addBookmark.isPending || removeBookmark.isPending}
+                          className="btn-action-bookmark"
                         />
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDelete(article)}
+                          className="btn-action-delete"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

@@ -88,14 +88,14 @@ export default function NewArticlePage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div>
+          <div id="create-article-header">
             <h1 className="text-3xl font-bold tracking-tight">Bài viết mới</h1>
             <p className="text-muted-foreground">
               Tạo bài viết mới
             </p>
           </div>
         </div>
-        <Button onClick={handleSubmit} disabled={createArticle.isPending}>
+        <Button onClick={handleSubmit} disabled={createArticle.isPending} id="save-article-btn">
           {createArticle.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -111,7 +111,7 @@ export default function NewArticlePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
+        <Card id="article-basic-info">
           <CardHeader>
             <CardTitle>Thông tin cơ bản</CardTitle>
             <CardDescription>
@@ -164,7 +164,7 @@ export default function NewArticlePage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="article-cover-image">
           <CardHeader>
             <CardTitle>Ảnh đại diện</CardTitle>
             <CardDescription>
@@ -201,7 +201,7 @@ export default function NewArticlePage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="article-classification">
           <CardHeader>
             <CardTitle>Phân loại</CardTitle>
             <CardDescription>
@@ -216,7 +216,7 @@ export default function NewArticlePage() {
                 onValueChange={(value) => setFormData({ ...formData, categoryId: parseInt(value) })}
                 disabled={isLoadingCategories}
               >
-                <SelectTrigger>
+                <SelectTrigger id="article-category-select">
                   <SelectValue placeholder={isLoadingCategories ? "Đang tải danh mục..." : "Chọn danh mục"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -235,7 +235,7 @@ export default function NewArticlePage() {
               </Select>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid gap-2" id="article-tags-selector">
               <Label>Thẻ</Label>
               <TagSelector
                 tags={tags || []}
@@ -252,7 +252,7 @@ export default function NewArticlePage() {
                 value={formData.status.toString()}
                 onValueChange={(value) => setFormData({ ...formData, status: parseInt(value) as ArticleStatus })}
               >
-                <SelectTrigger>
+                <SelectTrigger id="article-status-select">
                   <SelectValue placeholder="Chọn trạng thái" />
                 </SelectTrigger>
                 <SelectContent>
@@ -263,7 +263,7 @@ export default function NewArticlePage() {
               </Select>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2" id="article-featured-switch">
               <Switch
                 id="featured"
                 checked={formData.isFeatured}
@@ -274,14 +274,16 @@ export default function NewArticlePage() {
           </CardContent>
         </Card>
 
+        <div id="article-content-parts">
         <ArticlePartsManager
           parts={formData.parts || []}
           onChange={(parts) => setFormData({ ...formData, parts })}
           title={formData.title}
           description={formData.description}
         />
+        </div>
 
-        <Card>
+        <Card id="article-seo">
           <CardHeader>
             <CardTitle>SEO</CardTitle>
             <CardDescription>
@@ -306,6 +308,7 @@ export default function NewArticlePage() {
                 value={formData.metaDescription}
                 onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
                 placeholder="Mô tả SEO"
+                className="min-h-[60px]"
                 rows={3}
               />
             </div>

@@ -39,7 +39,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           onMenuClick={() => setSidebarOpen(true)}
         />
         
-        <main className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black">
+        <main id="admin-content" className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black">
           <div className="container mx-auto p-6">
             {children}
           </div>

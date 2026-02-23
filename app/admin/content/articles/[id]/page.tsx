@@ -360,6 +360,7 @@ export default function EditArticlePage() {
                 value={formData.metaDescription}
                 onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
                 placeholder="Mô tả SEO"
+                className="min-h-[60px]"
                 rows={3}
               />
             </div>
