@@ -32,6 +32,8 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            BACKEND_URL=https://cms-binhphu.vkhealth.vn
           tags: |
             registry.hcdc.vn/bpp/cms-web:${{ steps.vars.outputs.sha_short }}
             registry.hcdc.vn/bpp/cms-web:latest
