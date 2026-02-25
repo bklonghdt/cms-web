@@ -12,6 +12,13 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Category } from "@/lib/hooks/use-categories"
 import { MediaPickerDialog } from "@/components/media/media-picker-dialog"
 import { MediaItem } from "@/lib/hooks/use-media"
@@ -21,7 +28,8 @@ interface CategoryDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   category?: Category | null
-  onSubmit: (data: { name: string; code: string; imageUrl?: string | null; displayOrder?: number }) => void
+  categories?: Category[]
+  onSubmit: (data: { name: string; code: string; imageUrl?: string | null; parentCategoryId?: number | null; displayOrder?: number }) => void
   isLoading?: boolean
 }
 
@@ -29,12 +37,14 @@ export function CategoryDialog({
   open,
   onOpenChange,
   category,
+  categories = [],
   onSubmit,
   isLoading,
 }: CategoryDialogProps) {
   const [name, setName] = useState("")
   const [code, setCode] = useState("")
   const [imageUrl, setImageUrl] = useState("")
+  const [parentCategoryId, setParentCategoryId] = useState<string>("none")
   const [displayOrder, setDisplayOrder] = useState("0")
 
   useEffect(() => {
@@ -42,14 +52,19 @@ export function CategoryDialog({
       setName(category.name)
       setCode(category.code)
       setImageUrl(category.imageUrl || "")
+      setParentCategoryId(category.parentCategoryId ? category.parentCategoryId.toString() : "none")
       setDisplayOrder(category.displayOrder.toString())
     } else {
       setName("")
       setCode("")
       setImageUrl("")
+      setParentCategoryId("none")
       setDisplayOrder("0")
     }
   }, [category, open])
+
+  // Filter out the current category (and its descendants) from parent options to prevent circular references
+  const availableParents = categories.filter((c) => !category || c.id !== category.id)
 
   const generateCode = (text: string) => {
     return text
@@ -74,6 +89,7 @@ export function CategoryDialog({
       name,
       code,
       imageUrl: imageUrl.trim() || null,
+      parentCategoryId: parentCategoryId === "none" ? null : parseInt(parentCategoryId),
       displayOrder: parseInt(displayOrder) || 0,
     })
   }
@@ -177,6 +193,25 @@ export function CategoryDialog({
                 onOpenChange={setMediaPickerOpen}
                 onSelect={handleMediaSelect}
               />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="parentCategory">Danh mục cha</Label>
+              <Select
+                value={parentCategoryId}
+                onValueChange={setParentCategoryId}
+              >
+                <SelectTrigger id="parentCategory">
+                  <SelectValue placeholder="Chọn danh mục cha" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Không có (danh mục gốc)</SelectItem>
+                  {availableParents.map((c) => (
+                    <SelectItem key={c.id} value={c.id.toString()}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="displayOrder">Thứ tự hiển thị</Label>
