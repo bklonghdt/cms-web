@@ -151,16 +151,7 @@ export default function NewArticlePage() {
               />
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="excerpt">Trích dẫn</Label>
-              <Textarea
-                id="excerpt"
-                value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                placeholder="Đoạn trích ngắn để hiển thị"
-                rows={3}
-              />
-            </div>
+
           </CardContent>
         </Card>
 
@@ -283,35 +274,21 @@ export default function NewArticlePage() {
         />
         </div>
 
-        <Card id="article-seo">
+        <Card id="article-excerpt">
           <CardHeader>
-            <CardTitle>SEO</CardTitle>
+            <CardTitle>Trích dẫn</CardTitle>
             <CardDescription>
-              Tối ưu hóa bài viết cho công cụ tìm kiếm
+              Đoạn văn ngắn giới thiệu hoặc tóm tắt bài viết của bạn. Nếu để trống hệ thống có thể sẽ lấy tự động.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2">
-              <Label htmlFor="metaTitle">Tiêu đề SEO</Label>
-              <Input
-                id="metaTitle"
-                value={formData.metaTitle}
-                onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
-                placeholder="Tiêu đề SEO"
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="metaDescription">Mô tả SEO</Label>
-              <Textarea
-                id="metaDescription"
-                value={formData.metaDescription}
-                onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
-                placeholder="Mô tả SEO"
-                className="min-h-[60px]"
-                rows={3}
-              />
-            </div>
+          <CardContent>
+            <Textarea
+              id="excerpt"
+              value={formData.excerpt}
+              onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+              placeholder="Đoạn trích ngắn để hiển thị"
+              rows={4}
+            />
           </CardContent>
         </Card>
       </form>
