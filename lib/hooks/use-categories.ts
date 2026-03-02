@@ -93,7 +93,7 @@ export function useUpdateCategory() {
         throw new Error("Failed to update category")
       }
 
-      return response.json()
+      return
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })

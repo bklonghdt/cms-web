@@ -493,14 +493,14 @@ export function ArticlePartsManager({
             </ToggleGroup>
           </div>
         </CardHeader>
-        <CardContent className="min-h-50">
+        <CardContent className="min-h-[200px]">
           <div
             className={`mx-auto transition-all duration-300 ${
               previewMode === "mobile"
-                ? "w-80 h-140 border rounded-2xl bg-background shadow-lg overflow-hidden"
+                ? "w-80 h-[600px] border rounded-2xl bg-background shadow-lg overflow-hidden"
                 : previewMode === "tablet"
-                  ? "w-full h-128 border rounded-xl bg-background shadow-lg overflow-hidden"
-                  : "w-full max-h-150 overflow-y-auto"
+                  ? "w-full h-[800px] border rounded-xl bg-background shadow-lg overflow-hidden"
+                  : "w-full max-h-[800px] overflow-y-auto"
             }`}
           >
             <div

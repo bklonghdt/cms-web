@@ -26,7 +26,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-dvh overflow-hidden w-full">
       <AdminSidebar 
         isOpen={sidebarOpen} 
         isCollapsed={sidebarCollapsed}
@@ -34,12 +34,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         onToggleCollapse={handleToggleCollapse}
       />
       
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden min-h-0">
         <AdminHeader 
           onMenuClick={() => setSidebarOpen(true)}
         />
         
-        <main id="admin-content" className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black">
+        <main id="admin-content" className="flex-1 overflow-y-auto overscroll-none bg-zinc-50 dark:bg-black min-h-0">
           <div className="container mx-auto p-6">
             {children}
           </div>

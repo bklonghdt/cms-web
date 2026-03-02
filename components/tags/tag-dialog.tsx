@@ -37,7 +37,7 @@ export function TagDialog({
     if (tag) {
       setName(tag.name)
       setCode(tag.code)
-      setDisplayOrder(tag.displayOrder.toString())
+      setDisplayOrder(tag.displayOrder?.toString() || "0")
     } else {
       setName("")
       setCode("")
