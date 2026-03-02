@@ -27,7 +27,7 @@ export default function TagsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null)
 
-  const { data: tags, isLoading } = useTags()
+  const { data: tags, isLoading, refetch } = useTags()
   const createTag = useCreateTag()
   const updateTag = useUpdateTag()
   const deleteTag = useDeleteTag()
@@ -57,6 +57,7 @@ export default function TagsPage() {
       } else {
         await createTag.mutateAsync(data)
       }
+      await refetch()
       setDialogOpen(false)
     } catch (error) {
       console.error("Failed to save tag:", error)
@@ -67,6 +68,7 @@ export default function TagsPage() {
     if (selectedTag) {
       try {
         await deleteTag.mutateAsync(selectedTag.id)
+        await refetch()
         setDeleteDialogOpen(false)
       } catch (error) {
         console.error("Failed to delete tag:", error)

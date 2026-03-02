@@ -65,7 +65,13 @@ export function useCreateTag() {
         throw new Error("Failed to create tag")
       }
 
-      return response.json()
+      // Read response text first to avoid JSON parse errors on empty responses
+      const text = await response.text()
+      try {
+        return text ? JSON.parse(text) : {}
+      } catch (error) {
+        return {}
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] })
@@ -90,7 +96,13 @@ export function useUpdateTag() {
         throw new Error("Failed to update tag")
       }
 
-      return response.json()
+      // Read response text first to avoid JSON parse errors on empty responses
+      const text = await response.text()
+      try {
+        return text ? JSON.parse(text) : {}
+      } catch (error) {
+        return {}
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] })
@@ -111,7 +123,13 @@ export function useDeleteTag() {
         throw new Error("Failed to delete tag")
       }
 
-      return response.json()
+      // Read response text first to avoid JSON parse errors on empty responses
+      const text = await response.text()
+      try {
+        return text ? JSON.parse(text) : {}
+      } catch (error) {
+        return {}
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] })
