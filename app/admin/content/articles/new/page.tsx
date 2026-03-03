@@ -34,6 +34,9 @@ import { Image as ImageIcon, X } from "lucide-react"
 export default function NewArticlePage() {
   const router = useRouter()
   const { data: categories, isLoading: isLoadingCategories } = useCategories()
+  const leafCategories = categories?.filter(
+    (cat) => !categories.some((c) => c.parentCategoryId === cat.id)
+  )
   const { data: tags, isLoading: isLoadingTags } = useTags()
   const createArticle = useCreateArticle()
 
@@ -211,8 +214,8 @@ export default function NewArticlePage() {
                   <SelectValue placeholder={isLoadingCategories ? "Đang tải danh mục..." : "Chọn danh mục"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories && categories.length > 0 ? (
-                    categories.map((category) => (
+                  {leafCategories && leafCategories.length > 0 ? (
+                    leafCategories.map((category) => (
                       <SelectItem key={category.id} value={category.id.toString()}>
                         {category.name}
                       </SelectItem>

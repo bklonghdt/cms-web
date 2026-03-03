@@ -68,7 +68,13 @@ export function useCreateCategory() {
         throw new Error("Failed to create category")
       }
 
-      return response.json()
+      // Read response text first to avoid JSON parse errors on empty responses
+      const text = await response.text()
+      try {
+        return text ? JSON.parse(text) : {}
+      } catch (error) {
+        return {}
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
@@ -93,7 +99,13 @@ export function useUpdateCategory() {
         throw new Error("Failed to update category")
       }
 
-      return
+      // Read response text first to avoid JSON parse errors on empty responses
+      const text = await response.text()
+      try {
+        return text ? JSON.parse(text) : {}
+      } catch (error) {
+        return {}
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
@@ -114,7 +126,13 @@ export function useDeleteCategory() {
         throw new Error("Failed to delete category")
       }
 
-      return response.json()
+      // Read response text first to avoid JSON parse errors on empty responses
+      const text = await response.text()
+      try {
+        return text ? JSON.parse(text) : {}
+      } catch (error) {
+        return {}
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })

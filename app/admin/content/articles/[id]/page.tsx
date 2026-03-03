@@ -29,6 +29,7 @@ import { TagSelector } from "@/components/articles/tag-selector"
 import { MediaPickerDialog } from "@/components/media/media-picker-dialog"
 import { MediaItem } from "@/lib/hooks/use-media"
 import { ArticlePartsManager } from "@/components/articles/article-parts-manager"
+import { CommentsManager } from "@/components/articles/comments-manager"
 import Link from "next/link"
 import { Image as ImageIcon, X } from "lucide-react"
 
@@ -39,6 +40,9 @@ export default function EditArticlePage() {
 
   const { data: article, isLoading: isLoadingArticle } = useArticle(articleId)
   const { data: categories, isLoading: isLoadingCategories } = useCategories()
+  const leafCategories = categories?.filter(
+    (cat) => !categories.some((c) => c.parentCategoryId === cat.id)
+  )
   const { data: tags, isLoading: isLoadingTags } = useTags()
   const updateArticle = useUpdateArticle()
 
@@ -262,8 +266,8 @@ export default function EditArticlePage() {
                   <SelectValue placeholder={isLoadingCategories ? "Đang tải danh mục..." : "Chọn danh mục"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories && categories.length > 0 ? (
-                    categories.map((category) => (
+                  {leafCategories && leafCategories.length > 0 ? (
+                    leafCategories.map((category) => (
                       <SelectItem key={category.id} value={category.id.toString()}>
                         {category.name}
                       </SelectItem>
@@ -343,6 +347,11 @@ export default function EditArticlePage() {
           </CardContent>
         </Card>
       </form>
+
+      {/* Comment Section (Admin only displays comments for an existing article if they are editing) */}
+      <div className="mt-8">
+        <CommentsManager articleId={articleId} />
+      </div>
 
       <MediaPickerDialog
         open={mediaPickerOpen}

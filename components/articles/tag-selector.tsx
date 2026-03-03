@@ -111,12 +111,15 @@ export function TagSelector({
                   className="mr-1 mb-0"
                 >
                   {tag.name}
-                  <button
-                    className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
                     onClick={(e) => handleRemoveTag(tag.id, e)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleRemoveTag(tag.id, e as any) }}
                   >
                     <X className="h-3 w-3" />
-                  </button>
+                  </span>
                 </Badge>
               ))
             ) : (
