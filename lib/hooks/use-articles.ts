@@ -4,6 +4,7 @@ export enum ArticleStatus {
   Draft = 0,
   Published = 1,
   Archived = 2,
+  Scheduled = 3,
 }
 
 export enum ArticlePartType {
@@ -39,6 +40,7 @@ export interface ArticleBrief {
   categoryName?: string
   status: ArticleStatus
   publishedDate?: string
+  scheduledPublishDate?: string
   isFeatured: boolean
   viewCount: number
   viewCountAnonymous: number
@@ -64,6 +66,7 @@ export interface Article {
   categoryName?: string
   status: ArticleStatus
   publishedDate?: string
+  scheduledPublishDate?: string
   isFeatured: boolean
   viewCount: number
   viewCountAnonymous: number
@@ -92,6 +95,7 @@ export interface CreateArticleInput {
   parts: Omit<ArticlePart, "id" | "mediaUrl">[]
   status: ArticleStatus
   isFeatured: boolean
+  scheduledPublishDate?: string
 }
 
 export interface UpdateArticleInput {
@@ -108,6 +112,7 @@ export interface UpdateArticleInput {
   parts: Omit<ArticlePart, "id" | "mediaUrl">[]
   status: ArticleStatus
   isFeatured: boolean
+  scheduledPublishDate?: string
 }
 
 interface PaginatedResponse<T> {

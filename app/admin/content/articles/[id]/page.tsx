@@ -62,6 +62,7 @@ export default function EditArticlePage() {
     parts: [],
     status: ArticleStatus.Draft,
     isFeatured: false,
+    scheduledPublishDate: undefined,
   })
 
   useEffect(() => {
@@ -88,6 +89,9 @@ export default function EditArticlePage() {
         })),
         status: article.status,
         isFeatured: article.isFeatured,
+        scheduledPublishDate: article.scheduledPublishDate
+          ? new Date(article.scheduledPublishDate).toISOString().slice(0, 16)
+          : undefined,
       })
     }
   }, [article])
@@ -120,6 +124,9 @@ export default function EditArticlePage() {
         })),
         status: formData.status || ArticleStatus.Draft,
         isFeatured: formData.isFeatured || false,
+        scheduledPublishDate: formData.status === ArticleStatus.Scheduled
+          ? formData.scheduledPublishDate
+          : undefined,
       })
       router.push("/admin/content/articles")
     } catch (error) {
@@ -305,6 +312,7 @@ export default function EditArticlePage() {
                   <SelectItem value={ArticleStatus.Draft.toString()}>Bản nháp</SelectItem>
                   <SelectItem value={ArticleStatus.Published.toString()}>Đã xuất bản</SelectItem>
                   <SelectItem value={ArticleStatus.Archived.toString()}>Đã lưu trữ</SelectItem>
+                  <SelectItem value={ArticleStatus.Scheduled.toString()}>Lên lịch xuất bản</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -317,6 +325,22 @@ export default function EditArticlePage() {
               />
               <Label htmlFor="featured">Bài viết nổi bật</Label>
             </div>
+
+            {formData.status === ArticleStatus.Scheduled && (
+              <div className="grid gap-2">
+                <Label htmlFor="scheduledPublishDate">Ngày giờ xuất bản</Label>
+                <Input
+                  id="scheduledPublishDate"
+                  type="datetime-local"
+                  value={formData.scheduledPublishDate ?? ""}
+                  onChange={(e) => setFormData({ ...formData, scheduledPublishDate: e.target.value || undefined })}
+                  min={new Date().toISOString().slice(0, 16)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Bài viết sẽ tự động xuất bản vào thời điểm này.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

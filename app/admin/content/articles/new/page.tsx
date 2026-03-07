@@ -56,6 +56,7 @@ export default function NewArticlePage() {
     parts: [],
     status: ArticleStatus.Draft,
     isFeatured: false,
+    scheduledPublishDate: undefined,
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,6 +76,9 @@ export default function NewArticlePage() {
           mediaId: p.mediaId,
           caption: p.caption,
         })),
+        scheduledPublishDate: formData.status === ArticleStatus.Scheduled
+          ? formData.scheduledPublishDate
+          : undefined,
       })
       router.push("/admin/content/articles")
     } catch (error) {
@@ -253,6 +257,7 @@ export default function NewArticlePage() {
                   <SelectItem value={ArticleStatus.Draft.toString()}>Bản nháp</SelectItem>
                   <SelectItem value={ArticleStatus.Published.toString()}>Đã xuất bản</SelectItem>
                   <SelectItem value={ArticleStatus.Archived.toString()}>Đã lưu trữ</SelectItem>
+                  <SelectItem value={ArticleStatus.Scheduled.toString()}>Lên lịch xuất bản</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -265,6 +270,22 @@ export default function NewArticlePage() {
               />
               <Label htmlFor="featured">Bài viết nổi bật</Label>
             </div>
+
+            {formData.status === ArticleStatus.Scheduled && (
+              <div className="grid gap-2">
+                <Label htmlFor="scheduledPublishDate">Ngày giờ xuất bản</Label>
+                <Input
+                  id="scheduledPublishDate"
+                  type="datetime-local"
+                  value={formData.scheduledPublishDate ?? ""}
+                  onChange={(e) => setFormData({ ...formData, scheduledPublishDate: e.target.value || undefined })}
+                  min={new Date().toISOString().slice(0, 16)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Bài viết sẽ tự động xuất bản vào thời điểm này.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
