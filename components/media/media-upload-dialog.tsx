@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Upload, X, FileIcon, Image as ImageIcon } from "lucide-react"
+import { Upload, X, FileIcon, Image as ImageIcon, Link, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface MediaUploadDialogProps {
@@ -29,6 +30,30 @@ export function MediaUploadDialog({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [urlInput, setUrlInput] = useState("")
+  const [urlError, setUrlError] = useState("")
+  const [urlFetching, setUrlFetching] = useState(false)
+
+  // Handle paste events to upload images from clipboard
+  useEffect(() => {
+    if (!open) return
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items
+      if (!items) return
+      const imageFiles: File[] = []
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile()
+          if (file) imageFiles.push(file)
+        }
+      }
+      if (imageFiles.length > 0) {
+        setSelectedFiles((prev) => [...prev, ...imageFiles])
+      }
+    }
+    document.addEventListener("paste", handlePaste)
+    return () => document.removeEventListener("paste", handlePaste)
+  }, [open])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -82,6 +107,30 @@ export function MediaUploadDialog({
     return file.type.startsWith("image/")
   }
 
+  const handleFetchUrl = async () => {
+    const url = urlInput.trim()
+    if (!url) return
+    setUrlError("")
+    setUrlFetching(true)
+    try {
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const blob = await res.blob()
+      if (!blob.type.startsWith("image/") && !blob.type.startsWith("video/")) {
+        throw new Error("URL does not point to a supported media file")
+      }
+      const ext = blob.type.split("/")[1]?.split("+")[0] || "jpg"
+      const name = url.split("/").pop()?.split("?")[0] || `image.${ext}`
+      const file = new File([blob], name, { type: blob.type })
+      setSelectedFiles((prev) => [...prev, file])
+      setUrlInput("")
+    } catch (err) {
+      setUrlError(err instanceof Error ? err.message : "Failed to download")
+    } finally {
+      setUrlFetching(false)
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -118,7 +167,7 @@ export function MediaUploadDialog({
                 Drag and drop files here, or click to browse
               </p>
               <p className="text-xs text-muted-foreground mb-4">
-                Supports images, videos, audio, and documents
+                Supports images, videos, audio, and documents. You can also paste an image (Ctrl+V).
               </p>
               <Button
                 type="button"
@@ -127,6 +176,35 @@ export function MediaUploadDialog({
               >
                 Browse Files
               </Button>
+            </div>
+
+            {/* Download from URL */}
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-medium">Or download from URL</p>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Link className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="https://example.com/image.jpg"
+                    value={urlInput}
+                    onChange={(e) => { setUrlInput(e.target.value); setUrlError("") }}
+                    onKeyDown={(e) => e.key === "Enter" && handleFetchUrl()}
+                    className="pl-9"
+                    disabled={urlFetching || !!isLoading}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleFetchUrl}
+                  disabled={!urlInput.trim() || urlFetching || !!isLoading}
+                >
+                  {urlFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Download"}
+                </Button>
+              </div>
+              {urlError && (
+                <p className="text-xs text-destructive">{urlError}</p>
+              )}
             </div>
 
             {selectedFiles.length > 0 && (

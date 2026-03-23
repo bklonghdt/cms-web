@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { MediaItem, useMedia, useUploadMedia } from "@/lib/hooks/use-media";
 import { cn } from "@/lib/utils";
-import { Check, Loader2, Search, Upload, X, Image as ImageIcon, FileIcon } from "lucide-react";
+import { Check, Loader2, Search, Upload, X, Image as ImageIcon, FileIcon, Link } from "lucide-react";
 
 interface MediaPickerDialogProps {
   open: boolean;
@@ -95,6 +95,29 @@ export function MediaPickerDialog({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [urlInput, setUrlInput] = useState("");
+  const [urlError, setUrlError] = useState("");
+  const [urlFetching, setUrlFetching] = useState(false);
+
+  // Handle paste events to upload images from clipboard (only when on upload tab)
+  useEffect(() => {
+    if (!open || activeTab !== "upload") return;
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            setSelectedFile(file);
+            break;
+          }
+        }
+      }
+    };
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
+  }, [open, activeTab]);
 
   // Reset state when dialog opens
   useEffect(() => {
@@ -167,6 +190,30 @@ export function MediaPickerDialog({
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setSelectedFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFetchUrl = async () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    setUrlError("");
+    setUrlFetching(true);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      if (!blob.type.startsWith("image/") && !blob.type.startsWith("video/")) {
+        throw new Error("URL không trỏ đến file hình ảnh hoặc video hợp lệ");
+      }
+      const ext = blob.type.split("/")[1]?.split("+")[0] || "jpg";
+      const name = url.split("/").pop()?.split("?")[0] || `image.${ext}`;
+      const file = new File([blob], name, { type: blob.type });
+      setSelectedFile(file);
+      setUrlInput("");
+    } catch (err) {
+      setUrlError(err instanceof Error ? err.message : "Tải từ URL thất bại");
+    } finally {
+      setUrlFetching(false);
     }
   };
 
@@ -340,7 +387,7 @@ export function MediaPickerDialog({
                   Kéo thả file vào đây, hoặc nhấn để chọn file
                 </p>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Hỗ trợ hình ảnh và video
+                  Hỗ trợ hình ảnh và video. Bạn cũng có thể dán ảnh (Ctrl+V).
                 </p>
                 <Button
                   type="button"
@@ -349,6 +396,35 @@ export function MediaPickerDialog({
                 >
                   Chọn file
                 </Button>
+              </div>
+
+              {/* Download from URL */}
+              <div className="flex flex-col gap-1">
+                <p className="text-sm font-medium">Hoặc tải từ URL</p>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Link className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="https://example.com/image.jpg"
+                      value={urlInput}
+                      onChange={(e) => { setUrlInput(e.target.value); setUrlError("") }}
+                      onKeyDown={(e) => e.key === "Enter" && handleFetchUrl()}
+                      className="pl-9"
+                      disabled={urlFetching || uploadMedia.isPending}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleFetchUrl}
+                    disabled={!urlInput.trim() || urlFetching || uploadMedia.isPending}
+                  >
+                    {urlFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Tải xuống"}
+                  </Button>
+                </div>
+                {urlError && (
+                  <p className="text-xs text-destructive">{urlError}</p>
+                )}
               </div>
 
               {selectedFile && (
