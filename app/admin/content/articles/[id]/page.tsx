@@ -326,7 +326,7 @@ export default function EditArticlePage() {
               <Label htmlFor="featured">Bài viết nổi bật</Label>
             </div>
 
-            {(formData.status === ArticleStatus.Scheduled || formData.status === ArticleStatus.Published) && (
+            {(Number(formData.status) === ArticleStatus.Scheduled || Number(formData.status) === ArticleStatus.Published) && (
               <div className="grid gap-2">
                 <Label htmlFor="scheduledPublishDate">Ngày giờ xuất bản</Label>
                 <Input
