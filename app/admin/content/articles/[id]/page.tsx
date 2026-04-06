@@ -89,8 +89,8 @@ export default function EditArticlePage() {
         })),
         status: article.status,
         isFeatured: article.isFeatured,
-        scheduledPublishDate: article.scheduledPublishDate
-          ? new Date(article.scheduledPublishDate).toISOString().slice(0, 16)
+        scheduledPublishDate: (article.status === ArticleStatus.Scheduled ? article.scheduledPublishDate : article.publishedDate)
+          ? new Date((article.status === ArticleStatus.Scheduled ? article.scheduledPublishDate : article.publishedDate)!).toISOString().slice(0, 16)
           : undefined,
       })
     }
@@ -326,7 +326,7 @@ export default function EditArticlePage() {
               <Label htmlFor="featured">Bài viết nổi bật</Label>
             </div>
 
-            {formData.status === ArticleStatus.Scheduled && (
+            {(formData.status === ArticleStatus.Scheduled || formData.status === ArticleStatus.Published) && (
               <div className="grid gap-2">
                 <Label htmlFor="scheduledPublishDate">Ngày giờ xuất bản</Label>
                 <Input
@@ -334,10 +334,9 @@ export default function EditArticlePage() {
                   type="datetime-local"
                   value={formData.scheduledPublishDate ?? ""}
                   onChange={(e) => setFormData({ ...formData, scheduledPublishDate: e.target.value || undefined })}
-                  min={new Date().toISOString().slice(0, 16)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Bài viết sẽ tự động xuất bản vào thời điểm này.
+                  Bài viết sẽ tự động xuất bản vào thời điểm này (nếu chọn ngày trong quá khứ bài viết sẽ được xuất bản ngay).
                 </p>
               </div>
             )}
