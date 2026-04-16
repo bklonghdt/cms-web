@@ -32,6 +32,7 @@ import { ArticlePartsManager } from "@/components/articles/article-parts-manager
 import { CommentsManager } from "@/components/articles/comments-manager"
 import Link from "next/link"
 import { Image as ImageIcon, X } from "lucide-react"
+import { NavigationGuard } from "@/components/navigation-guard"
 
 export default function EditArticlePage() {
   const params = useParams()
@@ -47,6 +48,26 @@ export default function EditArticlePage() {
   const updateArticle = useUpdateArticle()
 
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false)
+
+  // Helper to format date-time string for datetime-local input (YYYY-MM-DDTHH:mm)
+  const formatDateTimeLocal = (dateString?: string) => {
+    if (!dateString) return ""
+    try {
+      const date = new Date(dateString)
+      if (isNaN(date.getTime())) return ""
+      
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, "0")
+      const day = String(date.getDate()).padStart(2, "0")
+      const hours = String(date.getHours()).padStart(2, "0")
+      const minutes = String(date.getMinutes()).padStart(2, "0")
+      
+      return `${year}-${month}-${day}T${hours}:${minutes}`
+    } catch (e) {
+      console.error("Invalid date string:", dateString)
+      return ""
+    }
+  }
 
   const [formData, setFormData] = useState<Partial<UpdateArticleInput> & { parts?: Omit<ArticlePart, "id">[], coverImageUrl?: string }>({
     title: "",
@@ -65,9 +86,12 @@ export default function EditArticlePage() {
     scheduledPublishDate: undefined,
   })
 
+  const [initialData, setInitialData] = useState<string | null>(null)
+  const isDirty = initialData !== null && JSON.stringify(formData) !== initialData
+
   useEffect(() => {
     if (article) {
-      setFormData({
+      const data = {
         id: article.id,
         title: article.title,
         slug: article.slug,
@@ -89,10 +113,14 @@ export default function EditArticlePage() {
         })),
         status: article.status,
         isFeatured: article.isFeatured,
-        scheduledPublishDate: (article.status === ArticleStatus.Scheduled ? article.scheduledPublishDate : article.publishedDate)
-          ? new Date((article.status === ArticleStatus.Scheduled ? article.scheduledPublishDate : article.publishedDate)!).toISOString().slice(0, 16)
-          : undefined,
-      })
+        scheduledPublishDate: formatDateTimeLocal(
+          article.status === ArticleStatus.Scheduled ? article.scheduledPublishDate : article.publishedDate
+        ),
+      }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormData(data)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setInitialData(JSON.stringify(data))
     }
   }, [article])
 
@@ -122,7 +150,7 @@ export default function EditArticlePage() {
           mediaId: p.mediaId,
           caption: p.caption,
         })),
-        status: formData.status || ArticleStatus.Draft,
+        status: formData.status ?? ArticleStatus.Draft,
         isFeatured: formData.isFeatured || false,
         scheduledPublishDate: formData.status === ArticleStatus.Scheduled
           ? formData.scheduledPublishDate
@@ -144,6 +172,7 @@ export default function EditArticlePage() {
 
   return (
     <div className="space-y-6">
+      <NavigationGuard isDirty={isDirty} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/content/articles">
@@ -300,9 +329,9 @@ export default function EditArticlePage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="status">Trạng thái</Label>
+              <Label htmlFor="status">Trạng thái *</Label>
               <Select
-                value={formData.status?.toString()}
+                value={formData.status !== undefined ? formData.status.toString() : ""}
                 onValueChange={(value) => setFormData({ ...formData, status: parseInt(value) as ArticleStatus })}
               >
                 <SelectTrigger>
@@ -326,7 +355,7 @@ export default function EditArticlePage() {
               <Label htmlFor="featured">Bài viết nổi bật</Label>
             </div>
 
-            {(Number(formData.status) === ArticleStatus.Scheduled || Number(formData.status) === ArticleStatus.Published) && (
+            {(formData.status === ArticleStatus.Scheduled || formData.status === ArticleStatus.Published) && (
               <div className="grid gap-2">
                 <Label htmlFor="scheduledPublishDate">Ngày giờ xuất bản</Label>
                 <Input

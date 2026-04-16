@@ -30,6 +30,7 @@ import { MediaItem } from "@/lib/hooks/use-media"
 import { ArticlePartsManager } from "@/components/articles/article-parts-manager"
 import Link from "next/link"
 import { Image as ImageIcon, X } from "lucide-react"
+import { NavigationGuard } from "@/components/navigation-guard"
 
 export default function NewArticlePage() {
   const router = useRouter()
@@ -58,6 +59,10 @@ export default function NewArticlePage() {
     isFeatured: false,
     scheduledPublishDate: undefined,
   })
+
+  // Track initial state for dirty detection
+  const [initialData] = useState(() => JSON.stringify(formData))
+  const isDirty = JSON.stringify(formData) !== initialData
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -88,6 +93,7 @@ export default function NewArticlePage() {
 
   return (
     <div className="space-y-6">
+      <NavigationGuard isDirty={isDirty} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/content/articles">
