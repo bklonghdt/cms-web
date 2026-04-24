@@ -172,7 +172,7 @@ export default function ArticlesPage() {
                   <TableHead>Thích</TableHead>
                   <TableHead>Không thích</TableHead>
                   <TableHead>Tác giả</TableHead>
-                  <TableHead>Ngày tạo</TableHead>
+                  <TableHead>Ngày đăng</TableHead>
                   <TableHead className="text-right">Hành động</TableHead>
                 </TableRow>
               </TableHeader>
@@ -225,7 +225,9 @@ export default function ArticlesPage() {
                       {article.authorName || "-"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {new Date(article.created).toLocaleDateString()}
+                      {article.publishedDate
+                        ? new Date(article.publishedDate).toLocaleDateString("vi-VN")
+                        : new Date(article.created).toLocaleDateString("vi-VN")}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
