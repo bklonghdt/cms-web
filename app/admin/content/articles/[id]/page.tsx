@@ -69,22 +69,7 @@ export default function EditArticlePage() {
     }
   }
 
-  const [formData, setFormData] = useState<Partial<UpdateArticleInput> & { parts?: Omit<ArticlePart, "id">[], coverImageUrl?: string }>({
-    title: "",
-    slug: "",
-    description: "",
-    excerpt: "",
-    metaTitle: "",
-    metaDescription: "",
-    coverImageId: undefined,
-    coverImageUrl: undefined,
-    categoryId: undefined,
-    tagIds: [],
-    parts: [],
-    status: ArticleStatus.Draft,
-    isFeatured: false,
-    scheduledPublishDate: undefined,
-  })
+  const [formData, setFormData] = useState<(Partial<UpdateArticleInput> & { parts?: Omit<ArticlePart, "id">[], coverImageUrl?: string }) | null>(null)
 
   const [initialData, setInitialData] = useState<string | null>(null)
   const isDirty = initialData !== null && JSON.stringify(formData) !== initialData
@@ -102,8 +87,8 @@ export default function EditArticlePage() {
         coverImageId: article.coverImageId,
         coverImageUrl: article.coverImageUrl,
         categoryId: article.categoryId,
-        tagIds: article.tags.map(t => t.id),
-        parts: article.parts.map(p => ({
+        tagIds: (article.tags ?? []).map(t => t.id),
+        parts: (article.parts ?? []).map(p => ({
           type: p.type,
           order: p.order,
           content: p.content,
@@ -127,7 +112,7 @@ export default function EditArticlePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.id || !formData.title) {
+    if (!formData || !formData.id || !formData.title) {
       return
     }
 
@@ -162,7 +147,7 @@ export default function EditArticlePage() {
     }
   }
 
-  if (isLoadingArticle) {
+  if (isLoadingArticle || !formData) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
