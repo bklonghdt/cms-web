@@ -38,6 +38,8 @@ export default function BookmarksPage() {
         return <Badge variant="secondary">Bản nháp</Badge>
       case ArticleStatus.Archived:
         return <Badge variant="outline">Đã lưu trữ</Badge>
+      case ArticleStatus.Scheduled:
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Lên lịch</Badge>
       default:
         return null
     }

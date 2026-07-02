@@ -118,6 +118,8 @@ export default function ArticlesPage() {
         return <Badge variant="secondary" className="bg-gray-100 text-gray-800 hover:bg-gray-200">Bản nháp</Badge>
       case ArticleStatus.Archived:
         return <Badge variant="destructive">Đã lưu trữ</Badge>
+      case ArticleStatus.Scheduled:
+        return <Badge className="bg-blue-500 hover:bg-blue-600">Lên lịch</Badge>
       default:
         return null
     }
@@ -225,7 +227,9 @@ export default function ArticlesPage() {
                       {article.authorName || "-"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {article.publishedDate
+                      {article.status === ArticleStatus.Scheduled && article.scheduledPublishDate
+                        ? `Lên lịch: ${new Date(article.scheduledPublishDate).toLocaleDateString("vi-VN")} ${new Date(article.scheduledPublishDate).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`
+                        : article.publishedDate
                         ? new Date(article.publishedDate).toLocaleDateString("vi-VN")
                         : new Date(article.created).toLocaleDateString("vi-VN")}
                     </TableCell>

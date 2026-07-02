@@ -137,8 +137,8 @@ export default function EditArticlePage() {
         })),
         status: formData.status ?? ArticleStatus.Draft,
         isFeatured: formData.isFeatured || false,
-        scheduledPublishDate: formData.status === ArticleStatus.Scheduled
-          ? formData.scheduledPublishDate
+        scheduledPublishDate: (formData.status === ArticleStatus.Scheduled || formData.status === ArticleStatus.Published) && formData.scheduledPublishDate
+          ? new Date(formData.scheduledPublishDate).toISOString()
           : undefined,
       })
       router.push("/admin/content/articles")

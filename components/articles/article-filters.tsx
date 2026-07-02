@@ -93,6 +93,8 @@ export function ArticleFilters({ filters, onFiltersChange }: ArticleFiltersProps
         return "Đã xuất bản"
       case ArticleStatus.Archived:
         return "Đã lưu trữ"
+      case ArticleStatus.Scheduled:
+        return "Lên lịch"
       default:
         return null
     }
@@ -163,6 +165,7 @@ export function ArticleFilters({ filters, onFiltersChange }: ArticleFiltersProps
                     <SelectItem value={ArticleStatus.Draft.toString()}>Bản nháp</SelectItem>
                     <SelectItem value={ArticleStatus.Published.toString()}>Đã xuất bản</SelectItem>
                     <SelectItem value={ArticleStatus.Archived.toString()}>Đã lưu trữ</SelectItem>
+                    <SelectItem value={ArticleStatus.Scheduled.toString()}>Lên lịch</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

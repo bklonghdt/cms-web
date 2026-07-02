@@ -81,8 +81,8 @@ export default function NewArticlePage() {
           mediaId: p.mediaId,
           caption: p.caption,
         })),
-        scheduledPublishDate: formData.status === ArticleStatus.Scheduled
-          ? formData.scheduledPublishDate
+        scheduledPublishDate: (Number(formData.status) === ArticleStatus.Scheduled || Number(formData.status) === ArticleStatus.Published) && formData.scheduledPublishDate
+          ? new Date(formData.scheduledPublishDate).toISOString()
           : undefined,
       })
       router.push("/admin/content/articles")
